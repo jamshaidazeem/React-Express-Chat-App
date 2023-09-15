@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 
 const LoginComponent = () => {
   const navigate = useNavigate();
+  const [fields, setFields] = useState({ email: "", password: "" });
 
-  const onClickLogin = () => {
+  const onSubmit = () => {
+    console.log(
+      "🚀 ~ file: Login.jsx:7 ~ LoginComponent ~ fields:",
+      JSON.stringify(fields)
+    );
+
     navigate("/profile");
   };
 
@@ -16,14 +22,22 @@ const LoginComponent = () => {
         <br />
         <br />
         <label htmlFor="email">Email</label>
-        <input name="email" type="email" />
+        <input
+          name="email"
+          type="email"
+          onChange={(e) => setFields({ ...fields, email: e.target.value })}
+        />
         <br />
         <label htmlFor="password">Password</label>
-        <input name="password" type="password" />
+        <input
+          name="password"
+          type="password"
+          onChange={(e) => setFields({ ...fields, password: e.target.value })}
+        />
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button onClick={onClickLogin}>Login</button>
+          <button onClick={onSubmit}>Login</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <Link to="/signup">Signup</Link>
         </div>

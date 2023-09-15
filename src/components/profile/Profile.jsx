@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 
 const ProfileComponent = () => {
   const navigate = useNavigate();
+  const [fields, setFields] = useState({
+    email: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    chatName: "",
+    age: "",
+  });
 
   const onClickBack = () => {
     console.log("on click back");
   };
 
-  const onClickSubmit = () => {
-    alert("Profile updated successfully!");
+  const onSubmit = () => {
+    console.log(
+      "🚀 ~ file: Profile.jsx:8 ~ ProfileComponent ~ fields:",
+      JSON.stringify(fields)
+    );
+
+    // alert("Profile updated successfully!");
   };
 
   const onClickLogout = () => {
@@ -26,25 +39,45 @@ const ProfileComponent = () => {
         <br />
         <br />
         <label htmlFor="email">Email</label>
-        <input name="email" type="email" />
+        <input
+          name="email"
+          type="email"
+          onChange={(e) => setFields({ ...fields, email: e.target.value })}
+        />
         <br />
         <label htmlFor="first name">First Name</label>
-        <input name="first name" type="text" />
+        <input
+          name="first name"
+          type="text"
+          onChange={(e) => setFields({ ...fields, firstName: e.target.value })}
+        />
         <br />
         <label htmlFor="last name">Last Name</label>
-        <input name="last name" type="text" />
+        <input
+          name="last name"
+          type="text"
+          onChange={(e) => setFields({ ...fields, lastName: e.target.value })}
+        />
         <br />
         <label htmlFor="chat name">Chat Name</label>
-        <input name="chat name" type="text" />
+        <input
+          name="chat name"
+          type="text"
+          onChange={(e) => setFields({ ...fields, chatName: e.target.value })}
+        />
         <br />
         <label htmlFor="age">Age</label>
-        <input name="age" type="text" />
+        <input
+          name="age"
+          type="text"
+          onChange={(e) => setFields({ ...fields, age: e.target.value })}
+        />
         <br />
         <br />
         <div className={styles.containerButtons}>
           <button onClick={onClickBack}>Back</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button onClick={onClickSubmit}>Submit</button>
+          <button onClick={onSubmit}>Submit</button>
         </div>
         <br />
         <br />
