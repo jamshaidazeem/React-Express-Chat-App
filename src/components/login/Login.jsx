@@ -1,7 +1,14 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 
 const LoginComponent = () => {
+  const navigate = useNavigate();
+
+  const onClickLogin = () => {
+    navigate("/profile");
+  };
+
   return (
     <>
       <div className={`${styles.container} full-page`}>
@@ -16,13 +23,13 @@ const LoginComponent = () => {
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button>Login</button>
+          <button onClick={onClickLogin}>Login</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button>Signup</button>
+          <Link to="/signup">Signup</Link>
         </div>
         <br />
         <br />
-        <a href="/forgot-password">Forgot Password</a>
+        <Link to="/forgot-password">Forgot Password</Link>
       </div>
     </>
   );

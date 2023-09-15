@@ -1,24 +1,28 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./ForgotPassword.module.css";
+import styles from "./NewPassword.module.css";
 
-const ForgotPasswordComponent = () => {
+const NewPasswordComponent = () => {
   const navigate = useNavigate();
   const onClickSubmit = () => {
     alert(
-      "an email is sent to you, please follow instructions to renew your password, thanks"
+      "Password updated successfully!, please login with your new password"
     );
-    navigate("/login");
+    navigate("/profile");
   };
 
   return (
     <>
       <div className={`${styles.container} full-page`}>
-        <h2>Forgot Password</h2>
+        <h2>New Password</h2>
         <br />
         <br />
-        <label htmlFor="email">Email</label>
-        <input name="email" type="email" />
+        <label htmlFor="new password">New Password</label>
+        <input name="new password" type="password" />
+        <br />
+        <label htmlFor="confirm new password">Confirm New Password</label>
+        <input name="confirm new password" type="password" />
+        <br />
         <br />
         <div className={styles.containerButtons}>
           <Link to="/login">Back To Login</Link>
@@ -30,4 +34,4 @@ const ForgotPasswordComponent = () => {
   );
 };
 
-export default ForgotPasswordComponent;
+export default NewPasswordComponent;

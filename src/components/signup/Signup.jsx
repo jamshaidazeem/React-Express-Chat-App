@@ -1,11 +1,20 @@
 import React from "react";
-import styles from "./Profile.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "./Signup.module.css";
 
 const SignupComponent = () => {
+  const navigate = useNavigate();
+  const onClickSubmit = () => {
+    alert(
+      "a confirmation email has been sent to your register email account, please verify to login, thanks!"
+    );
+    navigate("/login");
+  };
+
   return (
     <>
       <div className={`${styles.container} full-page`}>
-        <h2>Profile</h2>
+        <h2>Signup</h2>
         <br />
         <br />
         <label htmlFor="email">Email</label>
@@ -31,9 +40,9 @@ const SignupComponent = () => {
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button>Back</button>
+          <Link to="/login">Back To Login</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button>Submit</button>
+          <button onClick={onClickSubmit}>Submit</button>
         </div>
       </div>
     </>

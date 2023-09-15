@@ -1,7 +1,24 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 
 const ProfileComponent = () => {
+  const navigate = useNavigate();
+
+  const onClickBack = () => {
+    console.log("on click back");
+  };
+
+  const onClickSubmit = () => {
+    alert("Profile updated successfully!");
+  };
+
+  const onClickLogout = () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      navigate("/login");
+    }
+  };
+
   return (
     <>
       <div className={`${styles.container} full-page`}>
@@ -25,16 +42,16 @@ const ProfileComponent = () => {
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button>Back</button>
+          <button onClick={onClickBack}>Back</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button>Submit</button>
+          <button onClick={onClickSubmit}>Submit</button>
         </div>
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button>Reset Password</button>
+          <Link to="/reset-password">Reset Pasword</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button>Logout</button>
+          <button onClick={onClickLogout}>Logout</button>
         </div>
       </div>
     </>
