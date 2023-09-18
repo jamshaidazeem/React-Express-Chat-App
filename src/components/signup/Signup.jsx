@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Signup.module.css";
+import { URL_USERS } from "../../utilis/constants";
 
 const SignupComponent = () => {
   const navigate = useNavigate();
+
+  // states
+  const [postData, setPostData] = useState(false);
   const [fields, setFields] = useState({
     email: "",
     password: "",
@@ -11,20 +15,53 @@ const SignupComponent = () => {
     firstName: "",
     lastName: "",
     chatName: "",
-    age: "",
+    age: null,
   });
-  const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: Signup.jsx:16 ~ SignupComponent ~ fields:",
-      JSON.stringify(fields)
-    );
 
-    /*
-    alert(
-      "a confirmation email has been sent to your register email account, please verify to login, thanks!"
-    );
-    navigate("/login"); */
+  // actions
+  const onSubmit = () => {
+    // input validation
+    setPostData(true);
   };
+
+  // use callback hooks
+  const onSuccessPostData = useCallback(
+    (email) => {
+      alert(
+        `a confirmation email has been sent to ${email}, please verify to login, thanks!`
+      );
+      navigate("/login");
+    },
+    [navigate]
+  );
+
+  const callPostDataAPI = useCallback(async () => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fields),
+    };
+    try {
+      const response = await fetch(URL_USERS, options);
+      if (!response.ok) {
+        throw new Error("Something went wrong!");
+      }
+      const body = await response.json();
+      onSuccessPostData(body.email);
+    } catch (error) {
+      console.log("🚀 ~ file: Signup.jsx:45 ~ postData ~ error:", error);
+    }
+  }, [fields, onSuccessPostData]);
+
+  // use effect hooks
+  useEffect(() => {
+    if (postData) {
+      setPostData(false);
+      callPostDataAPI();
+    }
+  }, [postData, callPostDataAPI]);
 
   return (
     <>
@@ -79,7 +116,7 @@ const SignupComponent = () => {
         <label htmlFor="age">Age</label>
         <input
           name="age"
-          type="text"
+          type="number"
           onChange={(e) => setFields({ ...fields, age: e.target.value })}
         />
         <br />
