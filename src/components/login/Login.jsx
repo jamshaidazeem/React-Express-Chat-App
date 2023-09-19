@@ -30,6 +30,7 @@ const LoginComponent = () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", // this is required for saving cookies
       body: JSON.stringify(fields),
     };
     try {
