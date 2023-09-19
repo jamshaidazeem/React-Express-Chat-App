@@ -1,19 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import { URL_USERS_LOGIN } from "../../utilis/constants";
 
 const LoginComponent = () => {
   const navigate = useNavigate();
-  const [fields, setFields] = useState({ email: "", password: "" });
 
+  // states
+  const [postData, setPostData] = useState(false);
+  const [fields, setFields] = useState({
+    email: "",
+    password: "",
+  });
+
+  // actions
   const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: Login.jsx:7 ~ LoginComponent ~ fields:",
-      JSON.stringify(fields)
-    );
-
-    navigate("/profile");
+    // input validation
+    setPostData(true);
   };
+
+  // use callback hooks
+  const onSuccessPostData = useCallback(() => {
+    navigate("/profile");
+  }, [navigate]);
+
+  const callPostDataAPI = useCallback(async () => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fields),
+    };
+    try {
+      const response = await fetch(URL_USERS_LOGIN, options);
+      const body = await response.json();
+      if (!response.ok) {
+        // in case of error response body can contain handled error message from server
+        throw new Error(
+          body.message || response.statusText || "Something went wrong!"
+        );
+      }
+
+      onSuccessPostData();
+    } catch (error) {
+      console.log("🚀 ~ file: Login.jsx:47 ~ callPostDataAPI ~ error:", error);
+    }
+  }, [fields, onSuccessPostData]);
+
+  // use effect hooks
+  useEffect(() => {
+    if (postData) {
+      setPostData(false);
+      callPostDataAPI();
+    }
+  }, [postData, callPostDataAPI]);
 
   return (
     <>
