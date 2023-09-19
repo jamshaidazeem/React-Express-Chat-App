@@ -8,6 +8,7 @@ import ForgotPasswordComponent from "./components/forgotPassword/ForgotPassword"
 import ResetPasswordComponent from "./components/resetPassword/ResetPassword";
 import NoPageComponent from "./components/noPage/NoPage";
 import NewPasswordComponent from "./components/newPassword/NewPassword";
+import VerifyEmailComponent from "./components/verifyEmail/VerifyEmail";
 
 function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -30,6 +31,8 @@ function App() {
           element={<ResetPasswordComponent />}
         />
         <Route exact path="new-password" element={<NewPasswordComponent />} />
+        <Route exact path="verify-email" element={<VerifyEmailComponent />} />
+
         <Route path="*" element={<NoPageComponent />} />
       </Routes>
     </Router>

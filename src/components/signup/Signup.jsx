@@ -45,10 +45,14 @@ const SignupComponent = () => {
     };
     try {
       const response = await fetch(URL_USERS, options);
-      if (!response.ok) {
-        throw new Error("Something went wrong!");
-      }
       const body = await response.json();
+      if (!response.ok) {
+        // in case of error response body can contain handled error message from server
+        throw new Error(
+          body.message || response.statusText || "Something went wrong!"
+        );
+      }
+
       onSuccessPostData(body.email);
     } catch (error) {
       console.log("🚀 ~ file: Signup.jsx:45 ~ postData ~ error:", error);
