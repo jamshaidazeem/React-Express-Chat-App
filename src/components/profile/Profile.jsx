@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
+import { URL_USERS_LOGOUT } from "../../utilis/constants";
 
 const ProfileComponent = () => {
   const navigate = useNavigate();
@@ -13,8 +14,10 @@ const ProfileComponent = () => {
     age: "",
   });
 
-  const onClickBack = () => {
-    console.log("on click back");
+  const [logoutUser, setLogoutUser] = useState(false);
+
+  const onClickChat = () => {
+    console.log("on click chat");
   };
 
   const onSubmit = () => {
@@ -28,9 +31,44 @@ const ProfileComponent = () => {
 
   const onClickLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
-      navigate("/login");
+      setLogoutUser(true);
     }
   };
+
+  // use callback hooks
+  const onLogoutSuccess = useCallback(() => {
+    navigate("/login");
+  }, [navigate]);
+
+  const callLogoutAPI = useCallback(async () => {
+    try {
+      const options = {
+        method: "POST",
+        credentials: "include", // this is required for saving cookies
+      };
+
+      const response = await fetch(URL_USERS_LOGOUT, options);
+      const body = response.json();
+      if (!response.ok) {
+        // in case of error response body can contain handled error message from server
+        throw new Error(
+          body.message || response.statusText || "Something went wrong!"
+        );
+      }
+
+      onLogoutSuccess();
+    } catch (error) {
+      console.log("🚀 ~ file: Profile.jsx:46 ~ callLogoutAPI ~ error:", error);
+    }
+  }, [onLogoutSuccess]);
+
+  // effect hooks
+  useEffect(() => {
+    if (logoutUser) {
+      setLogoutUser(false);
+      callLogoutAPI();
+    }
+  }, [logoutUser, callLogoutAPI]);
 
   return (
     <>
@@ -75,7 +113,7 @@ const ProfileComponent = () => {
         <br />
         <br />
         <div className={styles.containerButtons}>
-          <button onClick={onClickBack}>Back</button>
+          <button onClick={onClickChat}>Chat</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <button onClick={onSubmit}>Submit</button>
         </div>
