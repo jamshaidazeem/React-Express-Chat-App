@@ -1,25 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./NewPassword.module.css";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import { URL_USERS_NEW_PASS } from "../../utilis/constants";
 
 const NewPasswordComponent = () => {
   const navigate = useNavigate();
+
+  const [postData, setPostData] = useState(false);
   const [fields, setFields] = useState({
+    token: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: NewPassword.jsx:11 ~ NewPasswordComponent ~ fields:",
-      JSON.stringify(fields)
-    );
 
-    /*
-    alert(
-      "Password updated successfully!, please login with your new password"
-    );
-    navigate("/profile"); */
+  // actions
+  const onSubmit = () => {
+    if (!fields.newPassword || !fields.confirmPassword) {
+      alert("new password and confirm password fields are required!");
+    } else if (fields.newPassword !== fields.confirmPassword) {
+      alert("new password and confirm password fields should be same!");
+    } else {
+      const token = window.location.search.split("=")[1];
+      if (token) {
+        setFields({ ...fields, token: token });
+        setPostData(true);
+      }
+    }
   };
+
+  // use callback hooks
+  const onSuccessPostData = useCallback(() => {
+    alert(
+      `You have successfully set your new password, please login with new password`
+    );
+    navigate("/login");
+  }, [navigate]);
+
+  const callPostDataAPI = useCallback(
+    async (payload) => {
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      };
+      try {
+        const response = await fetchWithGlobalErrorHandler(
+          URL_USERS_NEW_PASS,
+          options
+        );
+        const body = await response.json();
+        if (!response.ok) {
+          // in case of error response body can contain handled error message from server
+          throw new Error(
+            body.message || response.statusText || "Something went wrong!"
+          );
+        }
+
+        onSuccessPostData();
+      } catch (error) {
+        console.log(
+          "🚀 ~ file: NewPassword.jsx:68 ~ callPostDataAPI ~ error:",
+          error
+        );
+      }
+    },
+    [onSuccessPostData]
+  );
+
+  // use effect hooks
+  useEffect(() => {
+    if (postData) {
+      setPostData(false);
+      callPostDataAPI({ token: fields.token, newPassword: fields.newPassword });
+    }
+  }, [postData, fields, callPostDataAPI]);
 
   return (
     <>

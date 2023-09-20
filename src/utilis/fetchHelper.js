@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
 const fetchWithGlobalErrorHandler = async (url, options) => {
   try {
     const response = await fetch(url, options);

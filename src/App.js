@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import LoginComponent from "./components/login/Login";
@@ -11,8 +11,6 @@ import NewPasswordComponent from "./components/newPassword/NewPassword";
 import VerifyEmailComponent from "./components/verifyEmail/VerifyEmail";
 
 function App() {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-
   return (
     <Router>
       <Routes>
