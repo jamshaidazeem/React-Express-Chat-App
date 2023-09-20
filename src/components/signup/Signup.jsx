@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Signup.module.css";
-import { URL_USERS } from "../../utilis/constants";
+import { URL_USERS_SIGNUP } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const SignupComponent = () => {
@@ -45,7 +45,10 @@ const SignupComponent = () => {
       body: JSON.stringify(fields),
     };
     try {
-      const response = await fetchWithGlobalErrorHandler(URL_USERS, options);
+      const response = await fetchWithGlobalErrorHandler(
+        URL_USERS_SIGNUP,
+        options
+      );
       const body = await response.json();
       if (!response.ok) {
         // in case of error response body can contain handled error message from server
