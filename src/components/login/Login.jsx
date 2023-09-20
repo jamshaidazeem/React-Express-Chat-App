@@ -31,7 +31,7 @@ const LoginComponent = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // this is required for saving cookies
+      credentials: "include", // this is required to work with cookies
       body: JSON.stringify(fields),
     };
     try {

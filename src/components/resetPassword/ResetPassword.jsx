@@ -1,24 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css";
+import { URL_USERS_RESET_PASS } from "../../utilis/constants";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const ResetPasswordComponent = () => {
   const navigate = useNavigate();
+
+  const [postData, setPostData] = useState(false);
   const [fields, setFields] = useState({
-    oldPassword: "",
+    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: ResetPassword.jsx:12 ~ ResetPasswordComponent ~ fields:",
-      JSON.stringify(fields)
-    );
 
-    /* 
-    alert("Password updated successfully!");
-    navigate("/profile"); */
+  // actions
+  const onSubmit = () => {
+    if (
+      !fields.newPassword ||
+      !fields.confirmPassword ||
+      !fields.currentPassword
+    ) {
+      alert(
+        "current password, new password and confirm password fields are required!"
+      );
+    } else if (fields.newPassword !== fields.confirmPassword) {
+      alert("new password and confirm password fields should be same!");
+    } else {
+      setPostData(true);
+    }
   };
+
+  // use callback hooks
+  const onSuccessPostData = useCallback(() => {
+    alert(`You have successfully updated your password`);
+    navigate(-1); // go back
+  }, [navigate]);
+
+  const callPostDataAPI = useCallback(
+    async (payload) => {
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // this is required to work with cookies
+        body: JSON.stringify(payload),
+      };
+      try {
+        const response = await fetchWithGlobalErrorHandler(
+          URL_USERS_RESET_PASS,
+          options
+        );
+        const body = await response.json();
+        if (!response.ok) {
+          // in case of error response body can contain handled error message from server
+          throw new Error(
+            body.message || response.statusText || "Something went wrong!"
+          );
+        }
+
+        onSuccessPostData();
+      } catch (error) {
+        console.log("🚀 ~ file: ResetPassword.jsx:60 ~ error:", error);
+      }
+    },
+    [onSuccessPostData]
+  );
+
+  // use effect hooks
+  useEffect(() => {
+    if (postData) {
+      setPostData(false);
+      callPostDataAPI({
+        currentPassword: fields.currentPassword,
+        newPassword: fields.newPassword,
+      });
+    }
+  }, [postData, fields, callPostDataAPI]);
 
   return (
     <>
@@ -31,7 +90,7 @@ const ResetPasswordComponent = () => {
           name="old password"
           type="password"
           onChange={(e) =>
-            setFields({ ...fields, oldPassword: e.target.value })
+            setFields({ ...fields, currentPassword: e.target.value })
           }
         />
         <br />

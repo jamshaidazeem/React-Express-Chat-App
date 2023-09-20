@@ -45,7 +45,7 @@ const ProfileComponent = () => {
     try {
       const options = {
         method: "POST",
-        credentials: "include", // this is required for saving cookies
+        credentials: "include", // this is required to work with cookies
       };
 
       const response = await fetchWithGlobalErrorHandler(
