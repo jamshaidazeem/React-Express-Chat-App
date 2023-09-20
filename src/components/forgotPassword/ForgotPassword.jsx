@@ -1,23 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./ForgotPassword.module.css";
+import { URL_USERS_FORGOT_PASS } from "../../utilis/constants";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const ForgotPasswordComponent = () => {
   const navigate = useNavigate();
+
+  // states
+  const [postData, setPostData] = useState(false);
   const [email, setEmail] = useState("");
 
+  // actions
   const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: ForgotPassword.jsx:8 ~ ForgotPasswordComponent ~ email:",
-      email
-    );
-
-    /*
-    alert(
-      "an email is sent to you, please follow instructions to renew your password, thanks"
-    );
-    navigate("/login"); */
+    // input validation
+    setPostData(true);
   };
+
+  // use callback hooks
+  const onSuccessPostData = useCallback(
+    (email) => {
+      alert(
+        `a forgot password email has been sent to ${email}, please follow instructions to set new password!`
+      );
+      navigate("/login");
+    },
+    [navigate]
+  );
+
+  const callPostDataAPI = useCallback(async () => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    };
+    try {
+      const response = await fetchWithGlobalErrorHandler(
+        URL_USERS_FORGOT_PASS,
+        options
+      );
+      const body = await response.json();
+      if (!response.ok) {
+        // in case of error response body can contain handled error message from server
+        throw new Error(
+          body.message || response.statusText || "Something went wrong!"
+        );
+      }
+
+      onSuccessPostData(body.email);
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: ForgotPassword.jsx:54 ~ callPostDataAPI ~ error:",
+        error
+      );
+    }
+  }, [email, onSuccessPostData]);
+
+  // use effect hooks
+  useEffect(() => {
+    if (postData) {
+      setPostData(false);
+      callPostDataAPI();
+    }
+  }, [postData, callPostDataAPI]);
 
   return (
     <>
