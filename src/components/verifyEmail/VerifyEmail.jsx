@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import styles from "./VerifyEmail.module.css";
 import { URL_VERIFY_EMAIL } from "../../utilis/constants";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const VerifyEmailComponent = () => {
   const [loadingText, setLoadingText] = useState("Verifying Email...");
@@ -17,7 +18,10 @@ const VerifyEmailComponent = () => {
       body: JSON.stringify(payload),
     };
     try {
-      const response = await fetch(URL_VERIFY_EMAIL, options);
+      const response = await fetchWithGlobalErrorHandler(
+        URL_VERIFY_EMAIL,
+        options
+      );
       const body = await response.json();
       if (!response.ok) {
         // in case of error response body can contain handled error message from server

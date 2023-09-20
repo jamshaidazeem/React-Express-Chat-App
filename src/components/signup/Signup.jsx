@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Signup.module.css";
 import { URL_USERS } from "../../utilis/constants";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const SignupComponent = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const SignupComponent = () => {
       body: JSON.stringify(fields),
     };
     try {
-      const response = await fetch(URL_USERS, options);
+      const response = await fetchWithGlobalErrorHandler(URL_USERS, options);
       const body = await response.json();
       if (!response.ok) {
         // in case of error response body can contain handled error message from server

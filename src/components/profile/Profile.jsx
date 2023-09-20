@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 import { URL_USERS_LOGOUT } from "../../utilis/constants";
+import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 
 const ProfileComponent = () => {
   const navigate = useNavigate();
@@ -47,7 +48,10 @@ const ProfileComponent = () => {
         credentials: "include", // this is required for saving cookies
       };
 
-      const response = await fetch(URL_USERS_LOGOUT, options);
+      const response = await fetchWithGlobalErrorHandler(
+        URL_USERS_LOGOUT,
+        options
+      );
       const body = response.json();
       if (!response.ok) {
         // in case of error response body can contain handled error message from server
