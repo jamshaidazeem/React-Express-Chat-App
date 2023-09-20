@@ -3,8 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import { URL_USERS_LOGIN } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import { useAuth } from "../../utilis/authContext";
 
 const LoginComponent = () => {
+  const { saveUserInContext } = useAuth();
+
   const navigate = useNavigate();
 
   // states
@@ -22,8 +25,9 @@ const LoginComponent = () => {
 
   // use callback hooks
   const onSuccessPostData = useCallback(() => {
+    saveUserInContext();
     navigate("/profile");
-  }, [navigate]);
+  }, [navigate, saveUserInContext]);
 
   const callPostDataAPI = useCallback(async () => {
     const options = {

@@ -3,8 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 import { URL_USERS_LOGOUT } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import { useAuth } from "../../utilis/authContext";
 
 const ProfileComponent = () => {
+  const { clearUserFromContext } = useAuth();
+
   const navigate = useNavigate();
   const [fields, setFields] = useState({
     email: "",
@@ -38,8 +41,9 @@ const ProfileComponent = () => {
 
   // use callback hooks
   const onLogoutSuccess = useCallback(() => {
+    clearUserFromContext();
     navigate("/login");
-  }, [navigate]);
+  }, [navigate, clearUserFromContext]);
 
   const callLogoutAPI = useCallback(async () => {
     try {
