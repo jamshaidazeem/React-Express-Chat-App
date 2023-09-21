@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./ForgotPassword.module.css";
 import { URL_USERS_FORGOT_PASS } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import toast, { Toaster } from "react-hot-toast";
 
 const ForgotPasswordComponent = () => {
   const navigate = useNavigate();
@@ -51,10 +52,7 @@ const ForgotPasswordComponent = () => {
 
       onSuccessPostData(body.email);
     } catch (error) {
-      console.log(
-        "🚀 ~ file: ForgotPassword.jsx:54 ~ callPostDataAPI ~ error:",
-        error
-      );
+      toast.error(error.message);
     }
   }, [email, onSuccessPostData]);
 
@@ -85,6 +83,7 @@ const ForgotPasswordComponent = () => {
           <button onClick={onSubmit}>Submit</button>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

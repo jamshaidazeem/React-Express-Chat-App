@@ -4,7 +4,7 @@ import { getCookie } from "./helper";
 const authContext = createContext(null);
 
 export const useAuth = () => {
-  // returns context object using useContext hook
+  // returns context object value e.g (loggedInUser, saveUserInContext, clearUserFromContext) using useContext hook
   return useContext(authContext);
 };
 

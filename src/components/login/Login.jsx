@@ -4,6 +4,7 @@ import styles from "./Login.module.css";
 import { URL_USERS_LOGIN } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 import { useAuth } from "../../utilis/authContext";
+import toast, { Toaster } from "react-hot-toast";
 
 const LoginComponent = () => {
   const { saveUserInContext } = useAuth();
@@ -26,7 +27,10 @@ const LoginComponent = () => {
   // use callback hooks
   const onSuccessPostData = useCallback(() => {
     saveUserInContext();
-    navigate("/profile");
+    toast.success("login successful");
+    setTimeout(() => {
+      navigate("/profile");
+    }, 1000);
   }, [navigate, saveUserInContext]);
 
   const callPostDataAPI = useCallback(async () => {
@@ -53,7 +57,7 @@ const LoginComponent = () => {
 
       onSuccessPostData();
     } catch (error) {
-      console.log("🚀 ~ file: Login.jsx:47 ~ callPostDataAPI ~ error:", error);
+      toast.error(error.message);
     }
   }, [fields, onSuccessPostData]);
 
@@ -95,6 +99,7 @@ const LoginComponent = () => {
         <br />
         <Link to="/forgot-password">Forgot Password</Link>
       </div>
+      <Toaster />
     </>
   );
 };

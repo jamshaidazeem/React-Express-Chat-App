@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./NewPassword.module.css";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 import { URL_USERS_NEW_PASS } from "../../utilis/constants";
+import toast, { Toaster } from "react-hot-toast";
 
 const NewPasswordComponent = () => {
   const navigate = useNavigate();
@@ -17,9 +18,9 @@ const NewPasswordComponent = () => {
   // actions
   const onSubmit = () => {
     if (!fields.newPassword || !fields.confirmPassword) {
-      alert("new password and confirm password fields are required!");
+      toast.error("new password and confirm password fields are required!");
     } else if (fields.newPassword !== fields.confirmPassword) {
-      alert("new password and confirm password fields should be same!");
+      toast.error("new password and confirm password fields should be same!");
     } else {
       const token = window.location.search.split("=")[1];
       if (token) {
@@ -61,10 +62,7 @@ const NewPasswordComponent = () => {
 
         onSuccessPostData();
       } catch (error) {
-        console.log(
-          "🚀 ~ file: NewPassword.jsx:68 ~ callPostDataAPI ~ error:",
-          error
-        );
+        toast.error(error.message);
       }
     },
     [onSuccessPostData]
@@ -109,6 +107,7 @@ const NewPasswordComponent = () => {
           <button onClick={onSubmit}>Submit</button>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

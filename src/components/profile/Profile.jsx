@@ -4,6 +4,7 @@ import styles from "./Profile.module.css";
 import { URL_USERS_LOGOUT } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 import { useAuth } from "../../utilis/authContext";
+import toast, { Toaster } from "react-hot-toast";
 
 const ProfileComponent = () => {
   const { clearUserFromContext } = useAuth();
@@ -41,8 +42,11 @@ const ProfileComponent = () => {
 
   // use callback hooks
   const onLogoutSuccess = useCallback(() => {
-    clearUserFromContext();
-    navigate("/login");
+    toast.success("logout successful");
+    setTimeout(() => {
+      clearUserFromContext();
+      navigate("/login");
+    }, 1000);
   }, [navigate, clearUserFromContext]);
 
   const callLogoutAPI = useCallback(async () => {
@@ -66,7 +70,7 @@ const ProfileComponent = () => {
 
       onLogoutSuccess();
     } catch (error) {
-      console.log("🚀 ~ file: Profile.jsx:46 ~ callLogoutAPI ~ error:", error);
+      toast.error(error.message);
     }
   }, [onLogoutSuccess]);
 
@@ -133,6 +137,7 @@ const ProfileComponent = () => {
           <button onClick={onClickLogout}>Logout</button>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

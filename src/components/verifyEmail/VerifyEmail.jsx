@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./VerifyEmail.module.css";
 import { URL_VERIFY_EMAIL } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import toast, { Toaster } from "react-hot-toast";
 
 const VerifyEmailComponent = () => {
   const [loadingText, setLoadingText] = useState("Verifying Email...");
@@ -34,6 +35,7 @@ const VerifyEmailComponent = () => {
         "You have been verified, please login with your email and password"
       );
     } catch (error) {
+      toast.error(error.message);
       setLoadingText(error.message);
     }
   }, []);
@@ -57,6 +59,7 @@ const VerifyEmailComponent = () => {
           <Link to="/login">Login</Link>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

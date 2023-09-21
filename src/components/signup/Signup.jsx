@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Signup.module.css";
 import { URL_USERS_SIGNUP } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import toast, { Toaster } from "react-hot-toast";
 
 const SignupComponent = () => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const SignupComponent = () => {
 
       onSuccessPostData(body.email);
     } catch (error) {
-      console.log("🚀 ~ file: Signup.jsx:45 ~ postData ~ error:", error);
+      toast.error(error.message);
     }
   }, [fields, onSuccessPostData]);
 
@@ -135,6 +136,7 @@ const SignupComponent = () => {
           <button onClick={onSubmit}>Submit</button>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

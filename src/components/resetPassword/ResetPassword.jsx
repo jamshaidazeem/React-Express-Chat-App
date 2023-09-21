@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css";
 import { URL_USERS_RESET_PASS } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
+import toast, { Toaster } from "react-hot-toast";
 
 const ResetPasswordComponent = () => {
   const navigate = useNavigate();
@@ -21,11 +22,11 @@ const ResetPasswordComponent = () => {
       !fields.confirmPassword ||
       !fields.currentPassword
     ) {
-      alert(
+      toast.error(
         "current password, new password and confirm password fields are required!"
       );
     } else if (fields.newPassword !== fields.confirmPassword) {
-      alert("new password and confirm password fields should be same!");
+      toast.error("new password and confirm password fields should be same!");
     } else {
       setPostData(true);
     }
@@ -33,8 +34,10 @@ const ResetPasswordComponent = () => {
 
   // use callback hooks
   const onSuccessPostData = useCallback(() => {
-    alert(`You have successfully updated your password`);
-    navigate(-1); // go back
+    toast.success(`You have successfully updated your password`);
+    setTimeout(() => {
+      navigate(-1); // go back
+    }, 1000);
   }, [navigate]);
 
   const callPostDataAPI = useCallback(
@@ -62,7 +65,7 @@ const ResetPasswordComponent = () => {
 
         onSuccessPostData();
       } catch (error) {
-        console.log("🚀 ~ file: ResetPassword.jsx:60 ~ error:", error);
+        toast.error(error.message);
       }
     },
     [onSuccessPostData]
@@ -119,6 +122,7 @@ const ResetPasswordComponent = () => {
           <button onClick={onSubmit}>Submit</button>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };
