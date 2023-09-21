@@ -52,13 +52,12 @@ const ProfileComponent = ({
     }
   };
 
-  const saveUserDataInReduxStore = (user) => {};
-
   // use callback hooks
   const onLogoutSuccess = useCallback(() => {
     toast.success("logout successful");
     setTimeout(() => {
       clearUserFromContext();
+      removeUserFromStore();
       navigate("/login");
     }, 1000);
   }, [navigate, clearUserFromContext]);
@@ -88,18 +87,20 @@ const ProfileComponent = ({
     }
   }, [onLogoutSuccess]);
 
-  const onDetailsSuccess = useCallback(async (user) => {
-    setFields({
-      ...fields,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      chatName: user.chatName,
-      age: user.age,
-    });
-
-    saveUserDataInReduxStore(user);
-  }, []);
+  const onDetailsSuccess = useCallback(
+    async (user) => {
+      setFields({
+        ...fields,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        chatName: user.chatName,
+        age: user.age,
+      });
+      saveUserInStore(user);
+    },
+    [saveUserInStore]
+  );
 
   const callUserDetailsAPI = useCallback(
     async (endpoint) => {
@@ -126,9 +127,12 @@ const ProfileComponent = ({
     [onDetailsSuccess]
   );
 
-  const onPutDataAPISuccess = useCallback(async (user) => {
-    saveUserDataInReduxStore();
-  }, []);
+  const onPutDataAPISuccess = useCallback(
+    async (user) => {
+      saveUserInStore(user);
+    },
+    [saveUserInStore]
+  );
 
   const callPutDataAPI = useCallback(
     async (endpoint, payload) => {
@@ -187,7 +191,7 @@ const ProfileComponent = ({
   return (
     <>
       <div className={`${styles.container} full-page`}>
-        <h2>Profile</h2>
+        <h2>Profile </h2>
         <br />
         <br />
         <label htmlFor="email">Email</label>
@@ -254,7 +258,11 @@ const ProfileComponent = ({
 const mapStateToProps = (state) => ({
   userSavedInReduxStore: state[KEY_LOGGED_IN_USER],
 });
-
-const mapDispatchToProps = { saveUserInStore, removeUserFromStore };
+const mapDispatchToProps = (dispatch) => {
+  return {
+    saveUserInStore: (data) => dispatch(saveUserInStore(data)),
+    removeUserFromStore: () => dispatch(removeUserFromStore()),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileComponent);

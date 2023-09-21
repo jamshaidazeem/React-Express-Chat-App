@@ -9,7 +9,9 @@ import { AuthContextProvider } from "./containers/authContext";
 import { legacy_createStore as createStore } from "redux";
 import { Provider } from "react-redux";
 import rootReducer from "./containers/reduxReducers";
-const store = createStore(rootReducer);
+import { composeWithDevTools } from "redux-devtools-extension";
+
+const store = createStore(rootReducer, composeWithDevTools());
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
