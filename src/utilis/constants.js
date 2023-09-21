@@ -7,6 +7,8 @@ const URL_USERS_LOGOUT = `${URL_USERS}/logout`;
 const URL_USERS_FORGOT_PASS = `${URL_USERS}/forgotPassword`;
 const URL_USERS_NEW_PASS = `${URL_USERS}/newPassword`;
 const URL_USERS_RESET_PASS = `${URL_USERS}/resetPassword`;
+const URL_USERS_DETAIL = `${URL_USERS}/detail`;
+const URL_USERS_UPDATE = `${URL_USERS}/update`;
 
 export {
   BASE_URL,
@@ -17,4 +19,6 @@ export {
   URL_USERS_FORGOT_PASS,
   URL_USERS_NEW_PASS,
   URL_USERS_RESET_PASS,
+  URL_USERS_DETAIL,
+  URL_USERS_UPDATE,
 };

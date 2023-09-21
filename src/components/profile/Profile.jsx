@@ -1,37 +1,38 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
-import { URL_USERS_LOGOUT } from "../../utilis/constants";
+import {
+  URL_USERS_LOGOUT,
+  URL_USERS_DETAIL,
+  URL_USERS_UPDATE,
+} from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
 import { useAuth } from "../../utilis/authContext";
 import toast, { Toaster } from "react-hot-toast";
 
 const ProfileComponent = () => {
-  const { clearUserFromContext } = useAuth();
+  const { loggedInUser, clearUserFromContext } = useAuth();
 
   const navigate = useNavigate();
   const [fields, setFields] = useState({
     email: "",
-    confirmPassword: "",
     firstName: "",
     lastName: "",
     chatName: "",
-    age: "",
+    age: 0,
   });
 
   const [logoutUser, setLogoutUser] = useState(false);
+  const [putData, setPutData] = useState(false);
 
+  // actions
   const onClickChat = () => {
     console.log("on click chat");
   };
 
   const onSubmit = () => {
-    console.log(
-      "🚀 ~ file: Profile.jsx:8 ~ ProfileComponent ~ fields:",
-      JSON.stringify(fields)
-    );
-
-    // alert("Profile updated successfully!");
+    // fields validation
+    setPutData(true);
   };
 
   const onClickLogout = () => {
@@ -39,6 +40,8 @@ const ProfileComponent = () => {
       setLogoutUser(true);
     }
   };
+
+  const saveUserDataInReduxStore = () => {};
 
   // use callback hooks
   const onLogoutSuccess = useCallback(() => {
@@ -74,13 +77,100 @@ const ProfileComponent = () => {
     }
   }, [onLogoutSuccess]);
 
+  const onDetailsSuccess = useCallback(async (user) => {
+    setFields({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      chatName: user.chatName,
+      age: user.age,
+    });
+
+    saveUserDataInReduxStore(user);
+  }, []);
+
+  const callUserDetailsAPI = useCallback(
+    async (endpoint) => {
+      try {
+        const options = {
+          method: "GET",
+          credentials: "include", // this is required to work with cookies
+        };
+
+        const response = await fetchWithGlobalErrorHandler(endpoint, options);
+        const body = await response.json();
+        if (!response.ok) {
+          // in case of error response body can contain handled error message from server
+          throw new Error(
+            body.message || response.statusText || "Something went wrong!"
+          );
+        }
+
+        onDetailsSuccess(body.data);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    },
+    [onDetailsSuccess]
+  );
+
+  const onPutDataAPISuccess = useCallback(async (user) => {
+    saveUserDataInReduxStore();
+  }, []);
+
+  const callPutDataAPI = useCallback(
+    async (endpoint) => {
+      try {
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // this is required to work with cookies
+          body: JSON.stringify({
+            firstName: fields.firstName,
+            lastName: fields.lastName,
+            age: fields.age,
+          }),
+        };
+
+        const response = await fetchWithGlobalErrorHandler(endpoint, options);
+        const body = await response.json();
+        if (!response.ok) {
+          // in case of error response body can contain handled error message from server
+          throw new Error(
+            body.message || response.statusText || "Something went wrong!"
+          );
+        }
+
+        onPutDataAPISuccess(body.data);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    },
+    [onPutDataAPISuccess]
+  );
+
   // effect hooks
+  useEffect(() => {
+    if (loggedInUser && loggedInUser.id) {
+      callUserDetailsAPI(`${URL_USERS_DETAIL}/${loggedInUser.id}`);
+    }
+  }, []); // on load
+
   useEffect(() => {
     if (logoutUser) {
       setLogoutUser(false);
       callLogoutAPI();
     }
   }, [logoutUser, callLogoutAPI]);
+
+  useEffect(() => {
+    if (putData) {
+      setPutData(false);
+      callPutDataAPI(`${URL_USERS_UPDATE}/${loggedInUser.id}`);
+    }
+  }, [putData, callPutDataAPI, loggedInUser.id]);
 
   return (
     <>
@@ -90,8 +180,10 @@ const ProfileComponent = () => {
         <br />
         <label htmlFor="email">Email</label>
         <input
+          readOnly
           name="email"
           type="email"
+          value={fields.email}
           onChange={(e) => setFields({ ...fields, email: e.target.value })}
         />
         <br />
@@ -99,6 +191,7 @@ const ProfileComponent = () => {
         <input
           name="first name"
           type="text"
+          value={fields.firstName}
           onChange={(e) => setFields({ ...fields, firstName: e.target.value })}
         />
         <br />
@@ -106,13 +199,16 @@ const ProfileComponent = () => {
         <input
           name="last name"
           type="text"
+          value={fields.lastName}
           onChange={(e) => setFields({ ...fields, lastName: e.target.value })}
         />
         <br />
         <label htmlFor="chat name">Chat Name</label>
         <input
+          readOnly
           name="chat name"
           type="text"
+          value={fields.chatName}
           onChange={(e) => setFields({ ...fields, chatName: e.target.value })}
         />
         <br />
@@ -120,6 +216,7 @@ const ProfileComponent = () => {
         <input
           name="age"
           type="text"
+          value={fields.age}
           onChange={(e) => setFields({ ...fields, age: e.target.value })}
         />
         <br />
@@ -127,7 +224,7 @@ const ProfileComponent = () => {
         <div className={styles.containerButtons}>
           <button onClick={onClickChat}>Chat</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button onClick={onSubmit}>Submit</button>
+          <button onClick={onSubmit}>Update</button>
         </div>
         <br />
         <br />
