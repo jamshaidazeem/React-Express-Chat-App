@@ -7,10 +7,21 @@ import {
   URL_USERS_UPDATE,
 } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
-import { useAuth } from "../../utilis/authContext";
+import { useAuth } from "../../containers/authContext";
 import toast, { Toaster } from "react-hot-toast";
 
-const ProfileComponent = () => {
+import { connect } from "react-redux";
+import {
+  saveUserInStore,
+  removeUserFromStore,
+} from "../../containers/reduxActions";
+import { KEY_LOGGED_IN_USER } from "../../containers/reduxConstants";
+
+const ProfileComponent = ({
+  userSavedInReduxStore,
+  saveUserInStore,
+  removeUserFromStore,
+}) => {
   const { loggedInUser, clearUserFromContext } = useAuth();
 
   const navigate = useNavigate();
@@ -41,7 +52,7 @@ const ProfileComponent = () => {
     }
   };
 
-  const saveUserDataInReduxStore = () => {};
+  const saveUserDataInReduxStore = (user) => {};
 
   // use callback hooks
   const onLogoutSuccess = useCallback(() => {
@@ -79,6 +90,7 @@ const ProfileComponent = () => {
 
   const onDetailsSuccess = useCallback(async (user) => {
     setFields({
+      ...fields,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -119,7 +131,7 @@ const ProfileComponent = () => {
   }, []);
 
   const callPutDataAPI = useCallback(
-    async (endpoint) => {
+    async (endpoint, payload) => {
       try {
         const options = {
           method: "PUT",
@@ -127,11 +139,7 @@ const ProfileComponent = () => {
             "Content-Type": "application/json",
           },
           credentials: "include", // this is required to work with cookies
-          body: JSON.stringify({
-            firstName: fields.firstName,
-            lastName: fields.lastName,
-            age: fields.age,
-          }),
+          body: JSON.stringify(payload),
         };
 
         const response = await fetchWithGlobalErrorHandler(endpoint, options);
@@ -168,9 +176,13 @@ const ProfileComponent = () => {
   useEffect(() => {
     if (putData) {
       setPutData(false);
-      callPutDataAPI(`${URL_USERS_UPDATE}/${loggedInUser.id}`);
+      callPutDataAPI(`${URL_USERS_UPDATE}/${loggedInUser.id}`, {
+        firstName: fields.firstName,
+        lastName: fields.lastName,
+        age: fields.age,
+      });
     }
-  }, [putData, callPutDataAPI, loggedInUser.id]);
+  }, [putData, callPutDataAPI, loggedInUser.id, fields]);
 
   return (
     <>
@@ -239,4 +251,10 @@ const ProfileComponent = () => {
   );
 };
 
-export default ProfileComponent;
+const mapStateToProps = (state) => ({
+  userSavedInReduxStore: state[KEY_LOGGED_IN_USER],
+});
+
+const mapDispatchToProps = { saveUserInStore, removeUserFromStore };
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileComponent);

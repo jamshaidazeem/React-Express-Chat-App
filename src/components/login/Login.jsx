@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import { URL_USERS_LOGIN } from "../../utilis/constants";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
-import { useAuth } from "../../utilis/authContext";
+import { useAuth } from "../../containers/authContext";
 import toast, { Toaster } from "react-hot-toast";
 
 const LoginComponent = () => {

@@ -14,7 +14,7 @@ import ResetPasswordComponent from "./components/resetPassword/ResetPassword";
 import NoPageComponent from "./components/noPage/NoPage";
 import NewPasswordComponent from "./components/newPassword/NewPassword";
 import VerifyEmailComponent from "./components/verifyEmail/VerifyEmail";
-import { useAuth } from "./utilis/authContext";
+import { useAuth } from "./containers/authContext";
 
 function App() {
   const { loggedInUser, saveUserInContext } = useAuth();
