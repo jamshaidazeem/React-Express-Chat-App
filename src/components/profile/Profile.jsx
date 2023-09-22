@@ -38,7 +38,7 @@ const ProfileComponent = ({
 
   // actions
   const onClickChat = () => {
-    console.log("on click chat");
+    navigate("/chat");
   };
 
   const onSubmit = () => {

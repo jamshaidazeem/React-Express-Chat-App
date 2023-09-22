@@ -26,3 +26,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* hide scrollbars */
+div {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+div::-webkit-scrollbar {
+  /* WebKit */
+  width: 0;
+  height: 0;
+}

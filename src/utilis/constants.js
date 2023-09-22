@@ -9,6 +9,7 @@ const URL_USERS_NEW_PASS = `${URL_USERS}/newPassword`;
 const URL_USERS_RESET_PASS = `${URL_USERS}/resetPassword`;
 const URL_USERS_DETAIL = `${URL_USERS}/detail`;
 const URL_USERS_UPDATE = `${URL_USERS}/update`;
+const URL_USERS_LIST = `${URL_USERS}/chatUsers`;
 
 export {
   BASE_URL,
@@ -21,4 +22,5 @@ export {
   URL_USERS_RESET_PASS,
   URL_USERS_DETAIL,
   URL_USERS_UPDATE,
+  URL_USERS_LIST,
 };

@@ -14,6 +14,7 @@ import ResetPasswordComponent from "./components/resetPassword/ResetPassword";
 import NoPageComponent from "./components/noPage/NoPage";
 import NewPasswordComponent from "./components/newPassword/NewPassword";
 import VerifyEmailComponent from "./components/verifyEmail/VerifyEmail";
+import ChatComponent from "./components/chat/Chat";
 import { useAuth } from "./containers/authContext";
 
 function App() {
@@ -78,6 +79,11 @@ function App() {
           exact
           path="reset-password"
           element={boilerPlateForPrivateRoute(<ResetPasswordComponent />)}
+        />
+        <Route
+          exact
+          path="chat"
+          element={boilerPlateForPrivateRoute(<ChatComponent />)}
         />
         {/*no match route*/}
         <Route path="*" element={<NoPageComponent />} />
