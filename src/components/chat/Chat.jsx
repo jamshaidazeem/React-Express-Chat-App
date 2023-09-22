@@ -2,7 +2,11 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Chat.module.css";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
-import { URL_USERS_LIST, URL_MESSAGES_CREATE } from "../../utilis/constants";
+import {
+  URL_USERS_LIST,
+  URL_MESSAGES_CREATE,
+  URL_MESSAGES,
+} from "../../utilis/constants";
 import toast, { Toaster } from "react-hot-toast";
 import { connect } from "react-redux";
 import { KEY_LOGGED_IN_USER } from "../../containers/reduxConstants";
@@ -11,7 +15,6 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
   const [getChatUsers, setGetChatUsers] = useState(false);
   const [chatUsers, setChatUsers] = useState([]);
   const [chatUserSelectedForChat, setChatUserSelectedForChat] = useState(null);
-  const [getMessages, setGetMessages] = useState(false);
 
   const [fields, setFields] = useState({
     senderId: "",
@@ -19,6 +22,9 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
     recieverId: "",
   });
   const [postMessage, setPostMessage] = useState(false);
+
+  const [getMessages, setGetMessages] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
 
   // actions
   const onSubmit = () => {
@@ -37,11 +43,23 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
 
   const onChatUserClicked = (user) => {
     setFields((prevFields) => ({ ...prevFields, recieverId: user._id }));
-
-    console.log("🚀 ~ file: Chat.jsx:21 ~ ChatComponent ~ fields:", fields);
-
     setChatUserSelectedForChat(user);
-    // setGetMessages(true);
+    setGetMessages(true);
+  };
+
+  // helpers
+  const getFormattedDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return date.toLocaleDateString(undefined, options);
   };
 
   // use callback hooks
@@ -68,6 +86,8 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
       }
 
       toast.success("message send successfully");
+
+      setGetMessages(true);
     } catch (error) {
       toast.error(error.message);
     }
@@ -90,6 +110,37 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
       }
 
       setChatUsers(body.data && body.data.length ? body.data : []);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }, []);
+
+  const callGetChatMessagesAPI = useCallback(async (filters) => {
+    try {
+      const options = {
+        method: "GET",
+        credentials: "include", // this is required to work with cookies
+      };
+
+      const params = new URLSearchParams();
+      for (const key in filters) {
+        if (filters.hasOwnProperty(key)) {
+          params.append(key, filters[key]);
+        }
+      }
+
+      const url = `${URL_MESSAGES}?${params.toString()}`;
+
+      const response = await fetchWithGlobalErrorHandler(url, options);
+      const body = await response.json();
+      if (!response.ok) {
+        // in case of error response body can contain handled error message from server
+        throw new Error(
+          body.message || response.statusText || "Something went wrong!"
+        );
+      }
+
+      setChatMessages(body.data && body.data.length ? body.data : []);
     } catch (error) {
       toast.error(error.message);
     }
@@ -121,6 +172,22 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
     }
   }, [postMessage, fields, callPostDataAPI]);
 
+  useEffect(() => {
+    if (getMessages) {
+      setGetMessages(false);
+      const filters = {
+        senderId: userSavedInReduxStore._id,
+        recieverId: chatUserSelectedForChat._id,
+      };
+      callGetChatMessagesAPI(filters);
+    }
+  }, [
+    getMessages,
+    callGetChatMessagesAPI,
+    userSavedInReduxStore,
+    chatUserSelectedForChat,
+  ]);
+
   // JSX
   const getChatUserJSX = (user) => {
     return (
@@ -135,6 +202,32 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
         <h3>Name: {`${user.firstName} ${user.lastName}`}</h3>
         <h3>Age: {`${user.age}`}</h3>
         <h3>Email: {`${user.email}`}</h3>
+      </div>
+    );
+  };
+
+  const getChatMessageJSX = (message) => {
+    const isSenderTheLoggedInUser =
+      message.senderId === userSavedInReduxStore._id;
+    const formattedDate = getFormattedDate(message.createdAt);
+
+    return (
+      <div
+        key={message._id}
+        className={
+          isSenderTheLoggedInUser
+            ? styles.containerMessageCell
+            : styles.containerMessageCell2
+        }
+      >
+        <div className={styles.containerMessage}>
+          <h3>
+            {`${message.senderId.toUpperCase()}`} messaged at{" "}
+            {`${formattedDate}`}
+          </h3>
+          <br />
+          <h2>message: {`${message.message}`}</h2>
+        </div>
       </div>
     );
   };
@@ -158,11 +251,15 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
           <div className={styles.header}>
             <h2>Messages</h2>
           </div>
-          <div className={styles.containerList}>Messages List</div>
+          <div className={styles.containerList}>
+            {chatMessages &&
+              chatMessages.length &&
+              chatMessages.map((message) => getChatMessageJSX(message))}
+          </div>
           <div className={styles.footer}>
             <textarea
               name="chatbox"
-              className={styles.containerMessage}
+              className={styles.containerChatBox}
               placeholder="Type and send a message"
               onChange={(e) =>
                 setFields({ ...fields, message: e.target.value })

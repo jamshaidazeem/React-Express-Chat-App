@@ -90,6 +90,40 @@
     background-color: lightgrey;
     border: 1px solid darkgray;
     border-top: none;
+
+    .containerMessageCell {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      border-bottom: 1px solid red;
+      padding: 20px 12px;
+
+      .containerMessage {
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        color: brown;
+      }
+    }
+
+    .containerMessageCell2 {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
+      border-bottom: 1px solid red;
+      padding: 20px 12px;
+
+      .containerMessage {
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        color: brown;
+      }
+    }
   }
 
   .footer {
@@ -101,7 +135,7 @@
     align-items: center;
     background-color: white;
 
-    .containerMessage {
+    .containerChatBox {
       display: flex;
       width: 80%;
       height: 100%;
