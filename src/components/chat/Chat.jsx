@@ -2,38 +2,46 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Chat.module.css";
 import fetchWithGlobalErrorHandler from "../../utilis/fetchHelper";
-import { URL_USERS_LIST } from "../../utilis/constants";
+import { URL_USERS_LIST, URL_MESSAGES_CREATE } from "../../utilis/constants";
 import toast, { Toaster } from "react-hot-toast";
 import { connect } from "react-redux";
 import { KEY_LOGGED_IN_USER } from "../../containers/reduxConstants";
 
 const ChatComponent = ({ userSavedInReduxStore }) => {
   const [getChatUsers, setGetChatUsers] = useState(false);
-  const [postData, setPostData] = useState(false);
+  const [chatUsers, setChatUsers] = useState([]);
+  const [chatUserSelectedForChat, setChatUserSelectedForChat] = useState(null);
+  const [getMessages, setGetMessages] = useState(false);
+
   const [fields, setFields] = useState({
     senderId: "",
     message: "",
     recieverId: "",
   });
-  const [chatUsers, setChatUsers] = useState([]);
-  const [chatUserSelectedForChat, setChatUserSelectedForChat] = useState(null);
-  const [getMessages, setGetMessages] = useState(false);
+  const [postMessage, setPostMessage] = useState(false);
 
   // actions
   const onSubmit = () => {
-    if (!fields.senderId || !fields.recieverId) {
-      toast.error("sender or reciever id is missing!");
-    } else if (!fields.message) {
-      toast.error("message should not be empty!");
+    if (chatUserSelectedForChat) {
+      setFields({
+        ...fields,
+        senderId: userSavedInReduxStore._id,
+        recieverId: chatUserSelectedForChat._id,
+      });
+
+      setPostMessage(true);
     } else {
-      setPostData(true);
+      toast.error("please select a user to send a message!");
     }
   };
 
   const onChatUserClicked = (user) => {
-    console.log("🚀 ~ file: Chat.jsx:34 ~ onChatUserClicked ~ user:", user);
+    setFields((prevFields) => ({ ...prevFields, recieverId: user._id }));
+
+    console.log("🚀 ~ file: Chat.jsx:21 ~ ChatComponent ~ fields:", fields);
+
     setChatUserSelectedForChat(user);
-    setGetMessages(true);
+    // setGetMessages(true);
   };
 
   // use callback hooks
@@ -43,11 +51,12 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", // this is required to work with cookies
       body: JSON.stringify(payload),
     };
     try {
       const response = await fetchWithGlobalErrorHandler(
-        URL_USERS_LIST,
+        URL_MESSAGES_CREATE,
         options
       );
       const body = await response.json();
@@ -100,16 +109,23 @@ const ChatComponent = ({ userSavedInReduxStore }) => {
   }, [getChatUsers, callGetChatUsersAPI, userSavedInReduxStore]);
 
   useEffect(() => {
-    if (postData) {
-      setPostData(false);
-      callPostDataAPI({ ...fields });
+    if (postMessage) {
+      setPostMessage(false);
+      if (!fields.senderId || !fields.recieverId) {
+        toast.error("sender or reciever id is missing!");
+      } else if (!fields.message) {
+        toast.error("message should not be empty!");
+      } else {
+        callPostDataAPI(fields);
+      }
     }
-  }, [postData, fields, callPostDataAPI]);
+  }, [postMessage, fields, callPostDataAPI]);
 
   // JSX
   const getChatUserJSX = (user) => {
     return (
       <div
+        key={user._id}
         className={styles.containerUser}
         onClick={() => {
           onChatUserClicked(user);
