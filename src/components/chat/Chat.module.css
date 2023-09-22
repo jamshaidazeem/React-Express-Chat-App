@@ -30,6 +30,7 @@
     align-items: center;
     background-color: lightskyblue;
     border: 1px solid red;
+    color: "black";
   }
 
   .containerList {
@@ -43,6 +44,15 @@
     background-color: lightblue;
     overflow: scroll;
     border: 1px solid green;
+
+    .containerUser {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      border-bottom: 1px solid red;
+      padding: 12px;
+      color: darkgray;
+    }
   }
 }
 
